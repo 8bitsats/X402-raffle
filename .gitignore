@@ -1,0 +1,12 @@
+
+.anchor
+.DS_Store
+target
+**/*.rs.bk
+.env.local
+.env
+node_modules
+test-ledger
+target
+
+artifacts
