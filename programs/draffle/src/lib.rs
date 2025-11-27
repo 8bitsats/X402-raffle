@@ -18,12 +18,12 @@ pub const PROTOCOL_FEE_BPS: u128 = 0;
 
 pub mod treasury {
     use super::*;
-    // Replace with your treasury, this is the default treasury for testing purposes
-    declare_id!("Treasury11111111111111111111111111111111112");
+    // Replace with your treasury, this is the wallet for testing on devnet
+    declare_id!("5m8qxm4j75VQCv34oUThE5QNbKJG7KHfd85NdK4dVagS");
 }
 
 #[cfg(not(feature = "production"))]
-declare_id!("dRaFFLe111111111111111111111111111111111112");
+declare_id!("76HHTx3chJMqtXPXrxDgMJgSHbGUj8xmQBi7RoHc5zJD");
 
 #[cfg(feature = "production")]
 declare_id!("dRafA7ymQiLKjR5dmmdZC9RPX4EQUjqYFB3mWokRuDs");
@@ -40,7 +40,7 @@ pub mod draffle {
     ) -> Result<()> {
         let raffle = &mut ctx.accounts.raffle;
 
-        raffle.bump = *ctx.bumps.get("raffle").unwrap();
+        raffle.bump = ctx.bumps.raffle;
         raffle.creator = *ctx.accounts.creator.key;
         raffle.total_prizes = 0;
         raffle.claimed_prizes = 0;
@@ -234,7 +234,7 @@ pub mod draffle {
     }
 
     pub fn collect_proceeds<'info>(
-        ctx: Context<'_, '_, '_, 'info, CollectProceeds<'info>>,
+        ctx: Context<'_, '_, 'info, 'info, CollectProceeds<'info>>,
     ) -> Result<()> {
         let raffle = &ctx.accounts.raffle;
 
@@ -458,7 +458,7 @@ impl Entrants {
 
     pub fn get_entrant(entrants_data: Ref<&mut [u8]>, index: usize) -> Pubkey {
         let start_index = Entrants::BASE_SIZE + 32 * index;
-        Pubkey::new(&entrants_data[start_index..start_index + 32])
+        Pubkey::try_from(&entrants_data[start_index..start_index + 32]).unwrap()
     }
 
     fn append_entrant(
